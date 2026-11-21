@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Desarrollo empresarial</title>
+<meta name="theme-color" content="#111111">
+<meta name="description" content="Plan de estudio de 4 fases con sesiones de 30 minutos, notas y estadísticas.">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Desarrollo">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div id="gate" hidden>
+  <div class="gate-box">
+    <h1>Desarrollo empresarial</h1>
+    <p class="muted">Ingresá tu código personal para ver tus notas y tu progreso. Es el mismo código en todos tus dispositivos.</p>
+    <input id="gate-code" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Tu código">
+    <button id="gate-enter" class="btn primary">Entrar</button>
+    <button id="gate-new" class="btn">Crear un código nuevo</button>
+    <p id="gate-msg" class="muted small"></p>
+  </div>
+</div>
+<div id="app" hidden>
+  <header class="top"><span class="brand">Desarrollo empresarial</span><span id="sync-state" class="small muted"></span></header>
+  <main id="view"></main>
+  <nav class="tabs">
+    <a href="#/hoy" data-t="hoy">Hoy</a>
+    <a href="#/plan" data-t="plan">Plan</a>
+    <a href="#/stats" data-t="stats">Estadísticas</a>
+    <a href="#/ajustes" data-t="ajustes">Ajustes</a>
+  </nav>
+</div>
+<script src="data.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
