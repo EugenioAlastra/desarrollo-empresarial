@@ -123,6 +123,7 @@
     let tab = 'hoy';
     if (h.startsWith('#/s/')) { tab = 'plan'; vSesion(v, h.slice(4)); }
     else if (h.startsWith('#/plan')) { tab = 'plan'; vPlan(v); }
+    else if (h.startsWith('#/buscar')) { tab = 'buscar'; vBuscar(v); }
     else if (h.startsWith('#/stats')) { tab = 'stats'; vStats(v); }
     else if (h.startsWith('#/ajustes')) { tab = 'ajustes'; vAjustes(v); }
     else vHoy(v);
@@ -194,6 +195,66 @@
     $('#b-tpl').onclick = () => { ta.value += (ta.value && !ta.value.endsWith('\n\n') ? '\n\n' : '') + PLANTILLA.replace('{F}', s.titulo); ta.focus(); ta.oninput(); };
     const bd = $('#b-done'); const paint = () => { bd.textContent = isDone(id) ? '✓ Hecha (tocá para desmarcar)' : 'Marcar como hecha'; bd.classList.toggle('primary', !isDone(id)); };
     paint(); bd.onclick = () => { setItem('d:' + id, isDone(id) ? { done: false } : { done: true, at: new Date().toISOString() }); paint(); };
+  }
+
+
+  /* ---------- buscador por contenido ---------- */
+  const norm = t => String(t || '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9&+ ]+/g, ' ');
+  const ZONAS = [['kw', 'tema', 3], ['titulo', 'título', 4], ['desc', 'descripción', 2], ['fuente', 'fuente', 2]];
+  let idx = null;
+  function indice() {
+    if (idx) return idx;
+    idx = S.map(s => ({ s, z: ZONAS.map(z => norm(s[z[0]])), ctx: norm(faseDe(s).nombre + ' ' + bloqueDe(s).nombre + ' ' + faseDe(s).pregunta + ' ' + bloqueDe(s).pregunta) }));
+    return idx;
+  }
+  const empieza = (texto, q) => (' ' + texto).indexOf(' ' + q) >= 0;
+  function buscar(q, extras) {
+    const toks = [...new Set(norm(q).split(/\s+/).filter(t => t.length > 1))].filter(t => !STOP.has(t) || t.length > 3);
+    if (!toks.length) return { toks, res: [], parcial: false };
+    const notas = {}; S.forEach(s => { notas[s.id] = norm(note(s.id)); });
+    const eval1 = it => {
+      let pts = 0, hits = 0; const por = [];
+      toks.forEach(t => {
+        let w = 0;
+        ZONAS.forEach((z, i) => { if (empieza(it.z[i], t)) w = Math.max(w, z[2]); });
+        if (empieza(it.ctx, t)) w = Math.max(w, 1);
+        if (empieza(notas[it.s.id], t)) w = Math.max(w, 2);
+        if (w) { hits++; pts += w; por.push(t); }
+      });
+      return { it, pts, hits, por };
+    };
+    let todos = indice().filter(it => extras || it.s.tipo !== 'extra' || true).map(eval1).filter(r => r.hits);
+    let exactos = todos.filter(r => r.hits === toks.length);
+    const parcial = !exactos.length;
+    const lista = (parcial ? todos : exactos).sort((a, b) => b.hits - a.hits || b.pts - a.pts || a.it.s.orden - b.it.s.orden);
+    return { toks, res: lista, parcial };
+  }
+  function fraseTemas(s, toks) {
+    // muestra hasta 6 palabras clave de la sesión, resaltando las que coinciden
+    const ws = String(s.kw || '').split(/\s+/).filter(Boolean);
+    const vistos = new Set(); const out = [];
+    ws.forEach(w => { const n = norm(w).trim(); if (n && !vistos.has(n) && toks.some(t => n.indexOf(t) === 0)) { vistos.add(n); out.push(w); } });
+    return out.slice(0, 5);
+  }
+  let qBusca = '', verExtrasBusca = true;
+  function vBuscar(v) {
+    v.innerHTML = '<h1>Buscar</h1><input id="q" class="inp" type="search" placeholder="Ej: cuello de botella, moat, valuación, ventas…" autocomplete="off">' +
+      '<div class="seg"><button class="btn ' + (verExtrasBusca ? 'on' : '') + '" id="b-ex">' + (verExtrasBusca ? 'Incluye extras' : 'Solo obligatorias') + '</button></div>' +
+      '<div id="res"></div><p class="small muted">Busca por el tema que se trata en cada video o lectura (conceptos, personas, empresas, marcos), no solo por el título. También busca en tus propias notas. Podés escribir en español o en inglés y varias palabras a la vez.</p>';
+    const q = $('#q'); q.value = qBusca;
+    const pintar = () => {
+      qBusca = q.value; const r = buscar(qBusca); const box = $('#res');
+      if (!r.toks.length) { box.innerHTML = '<div class="small muted" style="margin:10px 0">Escribí una o más palabras clave.</div>'; return; }
+      const lista = r.res.filter(x => verExtrasBusca || x.it.s.tipo !== 'extra');
+      if (!lista.length) { box.innerHTML = '<div class="card"><b>Sin resultados.</b><div class="small muted">Probá con una palabra más general o en otro idioma (por ejemplo "inversion" / "investing").</div></div>'; return; }
+      const top = lista.slice(0, 40);
+      box.innerHTML = '<div class="small muted" style="margin:10px 0">' + (r.parcial ? 'Ninguna sesión tiene todas las palabras. Te muestro las que coinciden con alguna: ' : '') + lista.length + (lista.length === 1 ? ' sesión' : ' sesiones') + (lista.length > top.length ? ' (primeras ' + top.length + ')' : '') + '</div><div class="card" style="padding:0">' +
+        top.map(x => { const s = x.it.s; const tm = fraseTemas(s, r.toks);
+          return '<a class="row ' + (isDone(s.id) ? 'done' : '') + '" href="#/s/' + s.id + '"><span class="ck">' + (isDone(s.id) ? '✓' : '') + '</span><span class="t">' + esc(s.titulo) + '<br><span class="chip">' + esc(faseDe(s).nombre) + '</span><span class="chip">' + TIPO[s.tipo] + '</span>' +
+            (tm.length ? '<br><span class="small muted">Tema: ' + esc(tm.join(', ')) + '</span>' : '') + '</span><span class="m">' + s.min + ' min</span></a>'; }).join('') + '</div>';
+    };
+    q.oninput = pintar; $('#b-ex').onclick = () => { verExtrasBusca = !verExtrasBusca; vBuscar(v); };
+    pintar(); if (!qBusca) q.focus();
   }
 
   /* ---------- análisis automático de notas (sin IA) ---------- */

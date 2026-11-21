@@ -45,3 +45,5 @@ canvas,svg.img{max-width:100%;height:auto;border:1px solid var(--bd);border-radi
 
 .logo{width:26px;height:26px;border-radius:6px;vertical-align:middle;margin-right:8px}
 .gate-logo{width:140px;height:auto;display:block;margin:0 auto 12px;border-radius:12px}
+
+.inp{width:100%;box-sizing:border-box;padding:12px 14px;font-size:16px;border:1px solid var(--bd);border-radius:10px;background:var(--card);color:var(--fg);margin:6px 0}
