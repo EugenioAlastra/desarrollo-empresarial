@@ -151,7 +151,7 @@
       const sig = requeridas.filter(s => !isDone(s.id)).slice(1, 4);
       if (sig.length) h += '<h2>Lo que sigue</h2><div class="card" style="padding:0">' + sig.map(filaSesion).join('') + '</div>';
     }
-    h += '<p class="muted small">Podés abrir cualquier sesión de cualquier fase desde la pestaña Plan, sin respetar el orden.</p>';
+    h += '<p class="muted small">Plan obligatorio: ' + requeridas.length + ' sesiones de 30 min, unas ' + Math.round(requeridas.length / 3.5) + ' semanas a 3 o 4 por semana (' + Math.round(requeridas.length / 5) + ' a 5 por semana). Los extras son opcionales.</p><p class="muted small">Podés abrir cualquier sesión de cualquier fase desde la pestaña Plan, sin respetar el orden.</p>';
     v.innerHTML = h;
   }
 
