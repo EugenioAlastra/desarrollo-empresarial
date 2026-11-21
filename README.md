@@ -1,4 +1,4 @@
-# Desarrollo empresarial
+# Business Development
 
 Aplicación web instalable (PWA) con el plan de estudio de 4 fases: sesiones de 30 minutos con link exacto a YouTube, notas por sesión, estadísticas y cuadros sinópticos generados sin IA.
 

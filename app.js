@@ -1,4 +1,4 @@
-/* Desarrollo empresarial — PWA sin servidor propio.
+/* Business Development — PWA sin servidor propio.
    Notas y progreso: se guardan en el dispositivo y se sincronizan con Supabase usando un código personal. */
 (function () {
   'use strict';
@@ -362,7 +362,7 @@
   }
   function dibujarProgreso(cv, sb, r) {
     const c = cv.getContext('2d'); c.fillStyle = '#111'; c.fillRect(0, 0, cv.width, cv.height); c.fillStyle = '#ededed'; c.textBaseline = 'alphabetic'; c.textAlign = 'left';
-    c.font = '700 40px sans-serif'; c.fillText('Desarrollo empresarial', 50, 80);
+    c.font = '700 40px sans-serif'; c.fillText('Business Development', 50, 80);
     const pct = sb.hechasReq.length / requeridas.length; c.font = '700 110px sans-serif'; c.fillText(Math.round(pct * 100) + '%', 50, 210);
     c.font = '26px sans-serif'; c.fillStyle = '#9a9a9a'; c.fillText(sb.hechasReq.length + ' de ' + requeridas.length + ' sesiones obligatorias · ' + fmtMin(sb.minutos) + ' · racha ' + r.cur + ' d', 50, 255);
     P.fases.forEach((f, fi) => { const sf = S.filter(s => s.fase === fi && s.tipo !== 'extra'); const hf = sf.filter(s => isDone(s.id)).length; const y = 320 + fi * 46;
