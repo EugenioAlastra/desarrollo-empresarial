@@ -42,3 +42,6 @@ table.sin th{background:var(--soft)}
 canvas,svg.img{max-width:100%;height:auto;border:1px solid var(--bd);border-radius:10px;background:#fff}
 .seg{display:flex;gap:6px;flex-wrap:wrap;margin:8px 0}.seg .btn{padding:7px 12px;font-size:14px}.seg .btn.on{background:var(--acc);color:var(--accfg)}
 .pre{white-space:pre-wrap;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:13px;background:var(--soft);padding:10px;border-radius:10px}
+
+.logo{width:26px;height:26px;border-radius:6px;vertical-align:middle;margin-right:8px}
+.gate-logo{width:140px;height:auto;display:block;margin:0 auto 12px;border-radius:12px}
